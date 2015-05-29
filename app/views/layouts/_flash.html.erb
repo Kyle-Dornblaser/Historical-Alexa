@@ -1,0 +1,9 @@
+<% flash.each do |key, value| %>
+  <% if value.is_a?(Array) %>
+    <% value.each do |val| %>
+      <%= content_tag :div, val, class: "alert alert-#{key}" %>
+    <% end %>
+  <% else %>
+    <%= content_tag :div, value, class: "alert alert-#{key}" %>
+  <% end %>
+<% end %>

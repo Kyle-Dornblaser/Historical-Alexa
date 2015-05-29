@@ -1,16 +1,4 @@
-<% @domain ||= Domain.new %>
 <%= form_tag(domains_path, method: 'post', class: 'form-horizontal') do %>
-  <% if @domain.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@domain.errors.count, "error") %> prohibited this domain from being saved:</h2>
-
-      <ul>
-        <% @domain.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
   <div class="input-group">
     <%= text_field_tag 'domain[name]', '', class: 'form-control', placeholder: 'e.g. google.com' %>
     <span class="input-group-btn"> <%= submit_tag 'Search', class: 'btn btn-primary' %></span>

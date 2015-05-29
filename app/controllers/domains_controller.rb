@@ -43,8 +43,10 @@ class DomainsController < ApplicationController
         # Don't save because already up to date
         rank.destroy
       end
-      redirect_to @domain, notice: notice
+      flash[:success] = notice
+      redirect_to @domain
     else
+      flash[:danger] = @domain.errors.full_messages
       render 'home/index'
     end
   end
