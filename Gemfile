@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+gem 'chartjs-ror'
 gem 'coffee-rails', '~> 4.1.0'
 gem 'domainatrix'
 gem 'dotenv-rails'
