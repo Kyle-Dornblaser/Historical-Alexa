@@ -1,5 +1,5 @@
 class DomainsController < ApplicationController
-  before_action :set_domain, only: [:show, :edit, :update, :destroy]
+  before_action :set_domain, only: [:show]
 
   # GET /domains
   # GET /domains.json
@@ -10,15 +10,6 @@ class DomainsController < ApplicationController
   # GET /domains/1
   # GET /domains/1.json
   def show
-  end
-
-  # GET /domains/new
-  def new
-    @domain = Domain.new
-  end
-
-  # GET /domains/1/edit
-  def edit
   end
 
   # POST /domains
@@ -55,30 +46,6 @@ class DomainsController < ApplicationController
       redirect_to @domain, notice: notice
     else
       render 'home/index'
-    end
-  end
-
-  # PATCH/PUT /domains/1
-  # PATCH/PUT /domains/1.json
-  def update
-    respond_to do |format|
-      if @domain.update(domain_params)
-        format.html { redirect_to @domain, notice: 'Domain was successfully updated.' }
-        format.json { render :show, status: :ok, location: @domain }
-      else
-        format.html { render :edit }
-        format.json { render json: @domain.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /domains/1
-  # DELETE /domains/1.json
-  def destroy
-    @domain.destroy
-    respond_to do |format|
-      format.html { redirect_to domains_url, notice: 'Domain was successfully destroyed.' }
-      format.json { head :no_content }
     end
   end
 

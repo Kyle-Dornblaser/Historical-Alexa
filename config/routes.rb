@@ -1,4 +1,4 @@
 Rails.application.routes.draw do
   root 'home#index'
-  resources :domains
+  resources :domains, only: [:index, :show, :create]
 end
