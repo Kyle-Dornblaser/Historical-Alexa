@@ -18,6 +18,12 @@ class DomainsController < ApplicationController
     desired_count = 10.0
     # current number of data points
     current_count = ranks.size
+
+    if current_count === 1
+      traffic_ranks << 0
+      times << (ranks.first.created_at - 1.day).strftime("%B %d, %Y")
+    end
+
     for i in 0..desired_count-1
       # Formula used to get even distribution of elements
       # http://stackoverflow.com/questions/9873626/choose-m-evenly-spaced-elements-from-a-sequence-of-length-n/9873935#9873935
@@ -49,6 +55,7 @@ class DomainsController < ApplicationController
     @options = {
         width: 500,
         height: 300,
+        class: 'chart'
     }
   end
 
