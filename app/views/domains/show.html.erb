@@ -1,11 +1,5 @@
-<p>
-  <strong>Name:</strong>
-  <%= @domain.name %>
-</p>
-<p>
-  <strong>Traffic Rank:</strong>
-  <%= @domain.last_rank.traffic_rank %>
-</p>
+<h1><%= @domain.name %></h1>
+<h2>Traffic Rank: <%= @domain.last_rank.traffic_rank %></h2>
 <table>
 <% @domain.ranks.each do |rank| %>
 <tr>
