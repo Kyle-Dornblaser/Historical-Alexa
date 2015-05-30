@@ -4,7 +4,12 @@ class Domain < ActiveRecord::Base
   validates :name, presence: true, uniqueness: true
   validate :valid_domain_name
   before_validation :clean_name
-  friendly_id :name, use: [:slugged], slug_column: :name
+  friendly_id :name, use: [:slugged, :finders]
+
+  # override to keep periods in domain names
+  def normalize_friendly_id(string)
+    string
+  end
 
   def self.parse(name)
     url = Domainatrix.parse(name)

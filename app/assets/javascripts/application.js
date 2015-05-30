@@ -12,7 +12,10 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require turbolinks
 //= require Chart
 //= require excanvas
+//= require turbolinks
+//= require turboboost
 //= require_tree .
+
+Turbolinks.enableProgressBar();
