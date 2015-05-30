@@ -101,7 +101,7 @@ class DomainsController < ApplicationController
   private
   # Use callbacks to share common setup or constraints between actions.
   def set_domain
-    @domain = Domain.find(params[:id])
+    @domain = Domain.friendly.find(params[:id])
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.

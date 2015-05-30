@@ -1,9 +1,11 @@
 class Domain < ActiveRecord::Base
+  extend FriendlyId
   has_many :ranks
   validates :name, presence: true, uniqueness: true
   validate :valid_domain_name
   before_validation :clean_name
-  
+  friendly_id :name, use: [:slugged], slug_column: :name
+
   def self.parse(name)
     url = Domainatrix.parse(name)
     if url.domain.blank? || url.public_suffix.blank?
