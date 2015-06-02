@@ -1,4 +1,5 @@
 class Domain < ActiveRecord::Base
+  has_many :ranks
   validates :name, presence: true, uniqueness: true
   validate :valid_domain_name
   before_validation :clean_name
@@ -10,6 +11,10 @@ class Domain < ActiveRecord::Base
     else
       "#{url.domain}.#{url.public_suffix}"
     end
+  end
+  
+  def last_rank
+    self.ranks.last
   end
 
   private

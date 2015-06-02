@@ -25,20 +25,36 @@ class DomainsController < ApplicationController
   # POST /domains.json
   # Used on search submission
   def create
-    # find and redirect
-    # save and redirect
     parsed_domain = Domain.parse(domain_params[:name])
     if parsed_domain
       @domain = Domain.where(name: parsed_domain).first_or_create
     else
       @domain = Domain.create(name: domain_params[:name])
     end
-    respond_to do |format|
-      if @domain.id
-        format.html { redirect_to @domain, notice: 'Domain was successfully found or created.' }
+    
+    rank = Rank.new(domain: @domain)
+    unless rank.valid?
+      @domain.destroy
+      # This will cause validation to fail and an error message to be shown.
+      @domain = Domain.create(name: 'invalid name')
+      rank.destroy
+    end
+    
+    if @domain.id
+      if @domain.ranks.size === 0
+        notice = 'You are the first to ask about this domain. Traffic rank stored.'
+        rank.save
+      elsif Time.now - @domain.last_rank.created_at >= 1.day
+        notice = 'You are the first to ask about this domain today. Traffic rank stored.'
+        rank.save
       else
-        format.html { render :new }
+        notice = 'Traffic rank up to date.'
+        # Don't save because already up to date
+        rank.destroy
       end
+      redirect_to @domain, notice: notice
+    else
+      render :new
     end
   end
 

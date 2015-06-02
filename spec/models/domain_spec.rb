@@ -45,4 +45,27 @@ RSpec.describe Domain, type: :model do
       end
     end
   end
+  context '.last_rank' do
+    it 'should return the last rank added for specified domain' do
+      domain1 = Domain.create(name: 'google.com')
+      domain2 = Domain.create(name: 'facebook.com')
+
+      Rank.create(domain: domain1)
+      Rank.create(domain: domain2)
+      
+      rank1 = Rank.create(domain: domain1)
+      rank2 = Rank.create(domain: domain2)
+      
+      expect(domain1.last_rank).to eq(rank1)
+    end
+    
+    it 'should return nil if no ranks are available on specified domain' do
+      domain1 = Domain.create(name: 'google.com')
+      domain2 = Domain.create(name: 'facebook.com')
+      
+      rank1 = Rank.create(domain: domain1)
+      
+      expect(domain2.last_rank).to be_nil
+    end
+  end    
 end
