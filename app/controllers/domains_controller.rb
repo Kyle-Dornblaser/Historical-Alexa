@@ -23,16 +23,21 @@ class DomainsController < ApplicationController
 
   # POST /domains
   # POST /domains.json
+  # Used on search submission
   def create
-    @domain = Domain.new(domain_params)
-
+    # find and redirect
+    # save and redirect
+    parsed_domain = Domain.parse(domain_params[:name])
+    if parsed_domain
+      @domain = Domain.where(name: parsed_domain).first_or_create
+    else
+      @domain = Domain.create(name: domain_params[:name])
+    end
     respond_to do |format|
-      if @domain.save
-        format.html { redirect_to @domain, notice: 'Domain was successfully created.' }
-        format.json { render :show, status: :created, location: @domain }
+      if @domain.id
+        format.html { redirect_to @domain, notice: 'Domain was successfully found or created.' }
       else
         format.html { render :new }
-        format.json { render json: @domain.errors, status: :unprocessable_entity }
       end
     end
   end
