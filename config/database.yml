@@ -6,10 +6,12 @@ default: &default
 development:
   <<: *default
   database: alexa_historical_development
+  template: template0
 
 test:
   <<: *default
   database: alexa_historical_test
+  template: template0
 
 production:
   <<: *default
