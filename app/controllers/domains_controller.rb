@@ -54,7 +54,7 @@ class DomainsController < ApplicationController
       end
       redirect_to @domain, notice: notice
     else
-      render :new
+      render 'home/index'
     end
   end
 

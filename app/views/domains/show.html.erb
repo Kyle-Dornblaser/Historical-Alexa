@@ -4,6 +4,15 @@
   <strong>Name:</strong>
   <%= @domain.name %>
 </p>
-
-<%= link_to 'Edit', edit_domain_path(@domain) %> |
-<%= link_to 'Back', domains_path %>
+<p>
+  <strong>Traffic Rank:</strong>
+  <%= @domain.last_rank.traffic_rank %>
+</p>
+<table>
+<% @domain.ranks.each do |rank| %>
+<tr>
+  <td><%= rank.traffic_rank %></td>
+  <td><%= time_ago_in_words(rank.created_at) %></td>
+</tr>
+<% end %>
+</table>
