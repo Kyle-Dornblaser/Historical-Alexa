@@ -1,0 +1,35 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>Historical Chart</h2>
+    <%= line_chart(@data, @options) %>
+  </div>
+  <% @domains.each.with_index do |domain, index| %>
+    <div class="col-md-6">
+      <% css_class = index === 0 ? 'domain1' : 'domain2' %>
+      <h1><%= link_to(domain.name, "http://#{domain.name}", target: '_blank', class: css_class) %></h1>
+      <h2>Traffic Rank: <span class="theme-color"><%= number_with_delimiter(domain.last_rank.traffic_rank, delimiter: ',') %></span></h2>
+    </div>
+  <% end %>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <h3>Data from all time</h3>
+  </div>
+  <% @domains.each do |domain| %>
+    <div class="col-md-6">
+    <table class="table table-striped">
+      <tr>
+        <th>Traffic Rank</th>
+        <th>Logged</th>
+      </tr>
+      <% domain.ranks.reverse.each do |rank| %>
+        <tr>
+          <td><%= rank.traffic_rank %></td>
+          <td><%= "#{time_ago_in_words(rank.created_at)} ago" %></td>
+        </tr>
+      <% end %>
+    </table>
+    </div>
+  <% end %>
+  
+</div>

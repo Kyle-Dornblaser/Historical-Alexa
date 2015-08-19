@@ -97,6 +97,100 @@ class DomainsController < ApplicationController
       redirect_to :back
     end
   end
+  
+  def compare
+    domain1 = Domain.find(params[:id1])
+    domain2 = Domain.find(params[:id2])
+    @domains = [domain1, domain2]
+    
+    all_ranks = []
+    all_times = []
+    
+    @domains.each.with_index do |domain, index|
+      ranks = domain.ranks
+      times = []
+      traffic_ranks = []
+      
+  
+      # max number of data points
+      desired_count = 10.0
+      # current number of data points
+      current_count = ranks.size
+  
+      for i in 0..desired_count-1
+        # Formula used to get even distribution of elements
+        # http://stackoverflow.com/questions/9873626/choose-m-evenly-spaced-elements-from-a-sequence-of-length-n/9873935#9873935
+        index = (i * current_count / desired_count).ceil
+        # Prevent out of bounds
+        if index < current_count
+          traffic_ranks << ranks[index]
+          all_times << ranks[index].created_at.beginning_of_day
+        end
+        # Break loop when we have reached the max index or surpassed it
+        # Can repeat last index without this condition
+        break if index >= current_count - 1
+      end
+      
+      all_ranks << traffic_ranks
+    end
+    
+    traffic_ranks = [[], []]
+    
+    all_times.sort!
+    all_times.uniq!
+    
+    
+    all_times.each do |time|
+      all_ranks.each.with_index do |rank, index|
+        if rank[0].created_at.beginning_of_day === time 
+          traffic_ranks[index] << rank[0].traffic_rank
+          rank.shift
+        else
+          traffic_ranks[index] << 0
+        end
+      end
+    end
+    
+    all_times = all_times.map { |time| time.strftime("%B %d, %Y") }
+    
+    
+
+    @data = {
+        labels: all_times,
+        datasets: [
+            {
+                label: @domains[0].name,
+                fillColor: "rgba(0,0,255,0.2)",
+                strokeColor: "rgba(0,0,255,1)",
+                pointColor: "rgba(0,0,255,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(0,0,255,1)",
+                data: traffic_ranks[0]
+            },
+            {
+                label: @domains[1].name,
+                fillColor: "rgba(255,0,0,0.2)",
+                strokeColor: "rgba(255,0,0,1)",
+                pointColor: "rgba(255,0,0,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(255,0,0,1)",
+                data: traffic_ranks[1]
+            }
+            
+            
+        ]
+    }
+    @options = {
+        width: 800,
+        height: 400,
+        class: 'chart'
+    }
+    
+    
+  
+  end
 
   private
   # Use callbacks to share common setup or constraints between actions.
