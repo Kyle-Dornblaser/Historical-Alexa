@@ -23,6 +23,13 @@ class Domain < ActiveRecord::Base
   def last_rank
     self.ranks.last
   end
+  
+  def self.update_all
+    Domain.all.each do |domain|
+      rank = Rank.create(domain_id: domain.id)
+      rank.save
+    end
+  end
 
   private
 
