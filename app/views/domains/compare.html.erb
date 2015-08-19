@@ -24,8 +24,8 @@
       </tr>
       <% domain.ranks.reverse.each do |rank| %>
         <tr>
-          <td><%= rank.traffic_rank %></td>
-          <td><%= "#{time_ago_in_words(rank.created_at)} ago" %></td>
+          <td><%= number_with_delimiter(rank.traffic_rank, delimiter: ',') %></td>
+          <td><%= rank.created_at.strftime("%B %d, %Y") %></td>
         </tr>
       <% end %>
     </table>
