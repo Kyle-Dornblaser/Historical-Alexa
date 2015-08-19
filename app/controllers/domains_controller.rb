@@ -142,9 +142,11 @@ class DomainsController < ApplicationController
     
     all_times.each do |time|
       all_ranks.each.with_index do |rank, index|
-        if rank[0].created_at.beginning_of_day === time 
+        if rank[0] && rank[0].created_at.beginning_of_day === time 
           traffic_ranks[index] << rank[0].traffic_rank
           rank.shift
+        elsif traffic_ranks[index].last && traffic_ranks[index].last != 0
+          traffic_ranks[index] << traffic_ranks[index].last
         else
           traffic_ranks[index] << 0
         end
