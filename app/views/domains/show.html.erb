@@ -18,7 +18,7 @@
     <th>Traffic Rank</th>
     <th>Logged</th>
   </tr>
-  <% @domain.ranks.each do |rank| %>
+  <% @domain.ranks.reverse.each do |rank| %>
     <tr>
       <td><%= rank.traffic_rank %></td>
       <td><%= "#{time_ago_in_words(rank.created_at)} ago" %></td>
