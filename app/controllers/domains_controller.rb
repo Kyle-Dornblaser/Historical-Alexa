@@ -107,7 +107,7 @@ class DomainsController < ApplicationController
     all_times = []
     
     @domains.each.with_index do |domain, index|
-      ranks = domain.ranks
+      ranks = domain.ranks.order(:created_at)
       times = []
       traffic_ranks = []
       
@@ -117,12 +117,16 @@ class DomainsController < ApplicationController
       # current number of data points
       current_count = ranks.size
   
+      last_index = -1
+      index = -1
       for i in 0..desired_count-1
         # Formula used to get even distribution of elements
         # http://stackoverflow.com/questions/9873626/choose-m-evenly-spaced-elements-from-a-sequence-of-length-n/9873935#9873935
+        last_index = index
         index = (i * current_count / desired_count).ceil
+        
         # Prevent out of bounds
-        if index < current_count
+        if index < current_count && last_index != index
           traffic_ranks << ranks[index]
           all_times << ranks[index].created_at.beginning_of_day
         end
@@ -134,22 +138,30 @@ class DomainsController < ApplicationController
       all_ranks << traffic_ranks
     end
     
+   # render :xml => all_ranks[1]
+    
     traffic_ranks = [[], []]
     
     all_times.sort!
     all_times.uniq!
     
-    
-    all_times.each do |time|
-      all_ranks.each.with_index do |rank, index|
-        if all_ranks[index].size > 0 && all_ranks[index].first.created_at.beginning_of_day === time 
-          traffic_ranks[index] << all_ranks[index].first.traffic_rank
-          all_ranks[index].shift
-        elsif traffic_ranks[index].size > 0
-          traffic_ranks[index] << traffic_ranks[index].last
-        else
-          traffic_ranks[index] << 0
-        end
+    all_times.each.with_index do |time, index|
+      if all_ranks[0][0] && time === all_ranks[0][0].created_at.beginning_of_day
+        traffic_ranks[0] << all_ranks[0][0].traffic_rank
+        all_ranks[0].shift
+      elsif traffic_ranks[0].count > 0
+        traffic_ranks[0] << traffic_ranks[0].last
+      else
+        traffic_ranks[0] << 0
+      end
+      
+      if all_ranks[1][0] && time === all_ranks[1][0].created_at.beginning_of_day
+        traffic_ranks[1] << all_ranks[1][0].traffic_rank
+        all_ranks[1].shift
+      elsif traffic_ranks[1].count > 0
+        traffic_ranks[1] << traffic_ranks[1].last
+      else
+        traffic_ranks[1] << 0
       end
     end
     
