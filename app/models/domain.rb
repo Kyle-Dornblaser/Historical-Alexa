@@ -24,6 +24,33 @@ class Domain < ActiveRecord::Base
     self.ranks.last
   end
   
+  def distributed_ranks(desired_count = 10.0)
+    ranks = self.ranks.order(:created_at)
+    times = []
+    traffic_ranks = []
+    
+    # current number of data points
+    current_count = ranks.size
+
+    last_index = -1
+    index = -1
+    for i in 0..desired_count-1
+      # Formula used to get even distribution of elements
+      # http://stackoverflow.com/questions/9873626/choose-m-evenly-spaced-elements-from-a-sequence-of-length-n/9873935#9873935
+      last_index = index
+      index = (i * current_count / desired_count).ceil
+      
+      # Prevent out of bounds
+      if index < current_count && last_index != index
+        traffic_ranks << ranks[index]
+      end
+      # Break loop when we have reached the max index or surpassed it
+      # Can repeat last index without this condition
+      break if index >= current_count - 1
+    end
+    traffic_ranks
+  end
+  
   def self.update_all
     Domain.all.each do |domain|
       rank = Rank.create(domain_id: domain.id)

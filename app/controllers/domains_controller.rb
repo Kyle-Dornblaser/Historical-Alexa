@@ -10,32 +10,14 @@ class DomainsController < ApplicationController
   # GET /domains/1
   # GET /domains/1.json
   def show
-    ranks = @domain.ranks
-    times = []
+    distributed_ranks = @domain.distributed_ranks(10)
+    
     traffic_ranks = []
-
-    # max number of data points
-    desired_count = 10.0
-    # current number of data points
-    current_count = ranks.size
-
-    if current_count === 1
-      traffic_ranks << 0
-      times << (ranks.first.created_at - 1.day).strftime("%B %d, %Y")
-    end
-
-    for i in 0..desired_count-1
-      # Formula used to get even distribution of elements
-      # http://stackoverflow.com/questions/9873626/choose-m-evenly-spaced-elements-from-a-sequence-of-length-n/9873935#9873935
-      index = (i * current_count / desired_count).ceil
-      # Prevent out of bounds
-      if index < current_count
-        traffic_ranks << ranks[index].traffic_rank
-        times << ranks[index].created_at.strftime("%B %d, %Y")
-      end
-      # Break loop when we have reached the max index or surpassed it
-      # Can repeat last index without this condition
-      break if index >= current_count - 1
+    times = []
+    
+    distributed_ranks.each do |rank|
+      traffic_ranks << rank.traffic_rank
+      times << rank.created_at.strftime("%B %d, %Y")
     end
 
     @data = {
@@ -103,72 +85,37 @@ class DomainsController < ApplicationController
     domain2 = Domain.find(params[:id2])
     @domains = [domain1, domain2]
     
-    all_ranks = []
-    all_times = []
-    
-    @domains.each.with_index do |domain, index|
-      ranks = domain.ranks.order(:created_at)
-      times = []
-      traffic_ranks = []
-      
-  
-      # max number of data points
-      desired_count = 10.0
-      # current number of data points
-      current_count = ranks.size
-  
-      last_index = -1
-      index = -1
-      for i in 0..desired_count-1
-        # Formula used to get even distribution of elements
-        # http://stackoverflow.com/questions/9873626/choose-m-evenly-spaced-elements-from-a-sequence-of-length-n/9873935#9873935
-        last_index = index
-        index = (i * current_count / desired_count).ceil
-        
-        # Prevent out of bounds
-        if index < current_count && last_index != index
-          traffic_ranks << ranks[index]
-          all_times << ranks[index].created_at.beginning_of_day
-        end
-        # Break loop when we have reached the max index or surpassed it
-        # Can repeat last index without this condition
-        break if index >= current_count - 1
-      end
-      
-      all_ranks << traffic_ranks
+    all_ranks = @domains.map.with_index do |domain, index|
+      domain.distributed_ranks(10)
     end
     
-   # render :xml => all_ranks[1]
+    all_times = []
+    
+    all_ranks.each do |rank_array|
+      rank_array.each do |rank|
+        all_times << rank.created_at.beginning_of_day
+      end
+    end
+    
+    all_times.sort!.uniq!
     
     traffic_ranks = [[], []]
     
-    all_times.sort!
-    all_times.uniq!
-    
-    all_times.each.with_index do |time, index|
-      if all_ranks[0][0] && time === all_ranks[0][0].created_at.beginning_of_day
-        traffic_ranks[0] << all_ranks[0][0].traffic_rank
-        all_ranks[0].shift
-      elsif traffic_ranks[0].count > 0
-        traffic_ranks[0] << traffic_ranks[0].last
-      else
-        traffic_ranks[0] << 0
-      end
-      
-      if all_ranks[1][0] && time === all_ranks[1][0].created_at.beginning_of_day
-        traffic_ranks[1] << all_ranks[1][0].traffic_rank
-        all_ranks[1].shift
-      elsif traffic_ranks[1].count > 0
-        traffic_ranks[1] << traffic_ranks[1].last
-      else
-        traffic_ranks[1] << 0
+    all_times.each do |time|
+      (0..1).each do |index|
+        if all_ranks[index][0] && time === all_ranks[index][0].created_at.beginning_of_day
+          traffic_ranks[index] << all_ranks[index][0].traffic_rank
+          all_ranks[index].shift
+        elsif traffic_ranks[index].count > 0
+          traffic_ranks[index] << traffic_ranks[index].last
+        else
+          traffic_ranks[index] << 0
+        end
       end
     end
     
     all_times = all_times.map { |time| time.strftime("%B %d, %Y") }
-    
-    
-
+  
     @data = {
         labels: all_times,
         datasets: [
@@ -192,18 +139,14 @@ class DomainsController < ApplicationController
                 pointHighlightStroke: "rgba(255,0,0,1)",
                 data: traffic_ranks[1]
             }
-            
-            
         ]
     }
+    
     @options = {
-        width: 800,
+        width: 1000,
         height: 400,
         class: 'chart'
     }
-    
-    
-  
   end
 
   private
