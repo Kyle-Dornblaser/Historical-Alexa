@@ -4,8 +4,10 @@
     <h2>Traffic Rank: <span class="theme-color"><%= number_with_delimiter(@domain.last_rank.traffic_rank, delimiter: ',') %></span></h2>
     <%= form_tag(domains_path, method: 'post', class: 'form-horizontal', turboboost: true) do %>
         <%= hidden_field_tag('domain[name]', @domain.name) %>
-        <span class="input-group-btn"> <%= submit_tag 'Update', class: 'btn btn-primary' %></span>
+        <%= submit_tag 'Update', class: 'btn btn-primary' %>
+        <%= link_to 'Compare', compare_with_path(@domain), class: 'btn btn-default' %>
     <% end %>
+    
   </div>
   <div class="col-md-6">
     <h2>Historical Chart</h2>

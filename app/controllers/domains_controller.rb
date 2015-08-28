@@ -1,5 +1,5 @@
 class DomainsController < ApplicationController
-  before_action :set_domain, only: [:show]
+  before_action :set_domain, only: [:show, :compare_with]
 
   # GET /domains
   # GET /domains.json
@@ -80,8 +80,12 @@ class DomainsController < ApplicationController
     end
   end
   
+  def compare_with
+    @domains = Domain.all.order(:name)
+  end
+  
   def compare
-    domain1 = Domain.find(params[:id1])
+    domain1 = Domain.find(params[:id])
     domain2 = Domain.find(params[:id2])
     @domains = [domain1, domain2]
     

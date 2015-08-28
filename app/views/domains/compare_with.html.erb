@@ -1,0 +1,8 @@
+<div class="panel panel-default">
+  <div class="panel-heading">Domains</div>
+  <div class="list-group">
+    <% @domains.each do |domain| %>
+      <%= link_to domain.name, compare_path(@domain, domain), class: 'list-group-item' %>
+    <% end %>
+  </div>
+</div>
